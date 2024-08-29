@@ -8,12 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.annotation.SessionScope;
 
+//import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -47,21 +52,33 @@ public class ContactService {
         return issaved;
     }
 
-    public List<Contact> findMsgWithOpenStatus() {
-        List<Contact> contactMsgs = contactRepository.findByStatus(EazySchoolConstants.OPEN);
-        return contactMsgs;
+    public Page<Contact> findMsgWithOpenStatus(int pageNum, String sortField, String sortDir) {
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNum-1,pageSize,sortDir.equals("asc")? Sort.by(sortField).ascending() : Sort.by(sortField).descending());
+        Page<Contact> msgPage = contactRepository.findOpenMsgs(EazySchoolConstants.OPEN,pageable);
+        return msgPage;
     }
+
+//    public boolean updateMsgStatus(int contactId) {
+//        boolean isupdated = false;
+//        Optional<Contact> contact = contactRepository.findById(contactId);
+//        contact.ifPresent(contact1 -> {
+//            contact1.setStatus(EazySchoolConstants.CLOSE);
+////            contact1.setUpdatedBy(updatedBy);
+////            contact1.setUpdatedAt(LocalDateTime.now());
+//        });
+//        Contact updatedContact = contactRepository.save(contact.get());
+//        if(null!=updatedContact && updatedContact.getUpdatedBy()!=null){
+//            isupdated=true;
+//        }
+//        return isupdated;
+//    }
 
     public boolean updateMsgStatus(int contactId) {
         boolean isupdated = false;
-        Optional<Contact> contact = contactRepository.findById(contactId);
-        contact.ifPresent(contact1 -> {
-            contact1.setStatus(EazySchoolConstants.CLOSE);
-//            contact1.setUpdatedBy(updatedBy);
-//            contact1.setUpdatedAt(LocalDateTime.now());
-        });
-        Contact updatedContact = contactRepository.save(contact.get());
-        if(null!=updatedContact && updatedContact.getUpdatedBy()!=null){
+
+        int rows = contactRepository.updateMsgStatus(EazySchoolConstants.CLOSE, contactId);
+        if(rows>0){
             isupdated=true;
         }
         return isupdated;
