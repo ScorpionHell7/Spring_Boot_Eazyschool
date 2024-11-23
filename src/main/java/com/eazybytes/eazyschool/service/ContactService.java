@@ -55,7 +55,7 @@ public class ContactService {
     public Page<Contact> findMsgWithOpenStatus(int pageNum, String sortField, String sortDir) {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNum-1,pageSize,sortDir.equals("asc")? Sort.by(sortField).ascending() : Sort.by(sortField).descending());
-        Page<Contact> msgPage = contactRepository.findOpenMsgs(EazySchoolConstants.OPEN,pageable);
+        Page<Contact> msgPage = contactRepository.findByStatus(EazySchoolConstants.OPEN,pageable);
         return msgPage;
     }
 
@@ -77,7 +77,7 @@ public class ContactService {
     public boolean updateMsgStatus(int contactId) {
         boolean isupdated = false;
 
-        int rows = contactRepository.updateMsgStatus(EazySchoolConstants.CLOSE, contactId);
+        int rows = contactRepository.updateStatusById(EazySchoolConstants.CLOSE, contactId);
         if(rows>0){
             isupdated=true;
         }

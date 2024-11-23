@@ -28,12 +28,14 @@ public class ProjectSecurityConfig {
         MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
 
         http.csrf((csrf) -> csrf.ignoringRequestMatchers(mvcMatcherBuilder.pattern("/saveMsg"))
-                .ignoringRequestMatchers(mvcMatcherBuilder.pattern("/public/**")))
+                .ignoringRequestMatchers(mvcMatcherBuilder.pattern("/public/**"))
+                .ignoringRequestMatchers(mvcMatcherBuilder.pattern("/api/**")))
 //        http.csrf((csrf) -> csrf.ignoringRequestMatchers("/saveMsg").ignoringRequestMatchers("/public/**"))
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(mvcMatcherBuilder.pattern("/dashboard")).authenticated()
                         .requestMatchers(mvcMatcherBuilder.pattern("/displayMessages/**")).hasRole("ADMIN")
                         .requestMatchers(mvcMatcherBuilder.pattern("/closeMsg/**")).hasRole("ADMIN")
                         .requestMatchers(mvcMatcherBuilder.pattern("/admin/**")).hasRole("ADMIN")
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).authenticated()
                         .requestMatchers(mvcMatcherBuilder.pattern("")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/home")).permitAll()

@@ -25,8 +25,8 @@ import java.util.List;
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Integer> {
     List<Contact> findByStatus(String status);
-//    @Query("SELECT c from Contact c WHERE c.status = :status")
-    @Query(value="SELECT * from contact_msg c WHERE c.status = :status", nativeQuery = true)
+    @Query("SELECT c from Contact c WHERE c.status = :status")
+//    @Query(value="SELECT * from contact_msg c WHERE c.status = :status", nativeQuery = true)
     Page<Contact> findByStatus(@Param("status") String status, Pageable pageable);
 
     @Transactional
@@ -39,4 +39,12 @@ public interface ContactRepository extends JpaRepository<Contact, Integer> {
     @Transactional
     @Modifying
     int updateMsgStatus(String status, int id);
+
+    @Query(nativeQuery = true)
+    Page<Contact> findOpenMsgsNative(@Param("status") String status,Pageable pageable);
+
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true)
+    int updateMsgStatusNative(String status, int id);
 }
